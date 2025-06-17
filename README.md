@@ -28,26 +28,6 @@ A comprehensive home security system built with MicroPython for Raspberry Pi Pic
 | Breadboard or PCB | 1 | Circuit assembly |
 | Jumper Wires | Various | Connections |
 
-## 📋 Pin Configuration
-
-```
-Raspberry Pi Pico Pin Mapping:
-├── GPIO 0  → SDA (OLED I2C Data)
-├── GPIO 1  → SCL (OLED I2C Clock)
-├── GPIO 2  → Keypad Row 1
-├── GPIO 3  → Keypad Row 2
-├── GPIO 4  → Keypad Row 3
-├── GPIO 5  → Keypad Row 4
-├── GPIO 6  → Keypad Column 1
-├── GPIO 7  → Keypad Column 2
-├── GPIO 8  → Keypad Column 3
-├── GPIO 9  → Keypad Column 4
-├── GPIO 16 → Red LED (Anode)
-├── GPIO 17 → Buzzer (PWM Signal)
-├── GPIO 18 → Green LED (Anode)
-└── GPIO 19 → PIR Sensor (Digital Out)
-```
-
 ## 🔧 Circuit Connections
 
 ### OLED Display (I2C)
