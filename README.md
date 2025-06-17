@@ -1,132 +1,170 @@
-# SecurePico Web - IoT Security System with Remote Dashboard
+# SecurePico - IoT Security System with Motion Detection
 
-A comprehensive home security system built with MicroPython for Raspberry Pi Pico, featuring password authentication, motion detection, and alarm functionality with OLED display and keypad interface.
+A comprehensive home security system built with MicroPython for Raspberry Pi Pico, featuring password authentication, PIR motion detection, and alarm functionality with OLED display and 4x4 keypad interface.
 
 ## 🚀 Features
 
-- **Password Authentication**: Secure SHA-256 hashed password system
-- **Motion Detection**: PIR sensor integration for intrusion detection
-- **Multi-Mode Interface**: Login, password setting, and menu navigation
-- **Security Lockdown**: Automatic lockout after failed attempts
-- **Visual Feedback**: 128x64 OLED display with real-time status
-- **Audio Alerts**: Buzzer notifications for different events
-- **LED Indicators**: Red/green LEDs for system status
-- **Persistent Storage**: Password saved to flash memory
-- **Timeout Protection**: Auto-logout after inactivity
+- **Password Authentication**: Secure SHA-256 hashed password system with persistent flash storage
+- **Motion Detection**: PIR sensor integration with debounce protection
+- **Alarm System**: Armed/disarmed states with motion-triggered alerts
+- **Security Lockdown**: 6-second lockout after 3 consecutive failed attempts
+- **Visual Interface**: 128x64 OLED display with real-time status and menus
+- **Audio Feedback**: PWM buzzer with different tones for various events
+- **LED Indicators**: Red/green LEDs for visual status confirmation
+- **Password Management**: Set, change, and delete passwords with confirmation
+- **Input Validation**: Maximum 8-digit password length with masked display
 
 ## 🛠️ Hardware Requirements
 
 | Component | Quantity | Purpose |
 |-----------|----------|---------|
-| Raspberry Pi Pico 2 | 1 | Main microcontroller |
-| SSD1306 OLED Display (128x64) | 1 | User interface |
-| 4x4 Matrix Keypad | 1 | Password input |
-| PIR Motion Sensor | 1 | Motion detection |
-| Buzzer | 1 | Audio alerts |
-| LEDs (Red, Green) | 2 | Visual indicators |
-| Resistors (330Ω) | 2 | LED current limiting |
-| Breadboard/PCB | 1 | Circuit assembly |
-| Jumper Wires | - | Connections |
+| Raspberry Pi Pico | 1 | Main microcontroller |
+| SSD1306 OLED Display (128x64, I2C) | 1 | User interface |
+| 4x4 Matrix Keypad | 1 | Password input and navigation |
+| PIR Motion Sensor (HC-SR501) | 1 | Motion detection |
+| Active Buzzer | 1 | Audio alerts |
+| LEDs (Red, Green) | 2 | Visual status indicators |
+| Resistors (220Ω-330Ω) | 2 | LED current limiting |
+| Breadboard or PCB | 1 | Circuit assembly |
+| Jumper Wires | Various | Connections |
 
 ## 📋 Pin Configuration
 
 ```
-Raspberry Pi Pico Pinout:
-├── GPIO 0  → SDA (OLED)
-├── GPIO 1  → SCL (OLED)
-├── GPIO 2-5 → Keypad Rows
-├── GPIO 6-9 → Keypad Columns
-├── GPIO 16 → Red LED
-├── GPIO 17 → Buzzer
-├── GPIO 18 → Green LED
-└── GPIO 19 → PIR Sensor
+Raspberry Pi Pico Pin Mapping:
+├── GPIO 0  → SDA (OLED I2C Data)
+├── GPIO 1  → SCL (OLED I2C Clock)
+├── GPIO 2  → Keypad Row 1
+├── GPIO 3  → Keypad Row 2
+├── GPIO 4  → Keypad Row 3
+├── GPIO 5  → Keypad Row 4
+├── GPIO 6  → Keypad Column 1
+├── GPIO 7  → Keypad Column 2
+├── GPIO 8  → Keypad Column 3
+├── GPIO 9  → Keypad Column 4
+├── GPIO 16 → Red LED (Anode)
+├── GPIO 17 → Buzzer (PWM Signal)
+├── GPIO 18 → Green LED (Anode)
+└── GPIO 19 → PIR Sensor (Digital Out)
 ```
 
-## 🔧 Circuit Diagram
+## 🔧 Circuit Connections
 
+### OLED Display (I2C)
 ```
-    Raspberry Pi Pico
-         ┌─────┐
-    SDA──┤ 0   │
-    SCL──┤ 1   │
-    R1───┤ 2   │
-    R2───┤ 3   │         OLED Display
-    R3───┤ 4   │         ┌──────────┐
-    R4───┤ 5   │    SDA──┤SDA    VCC├──3.3V
-    C1───┤ 6   │    SCL──┤SCL    GND├──GND
-    C2───┤ 7   │         └──────────┘
-    C3───┤ 8   │
-    C4───┤ 9   │         4x4 Keypad
-         │     │         ┌──────────┐
-    LED──┤ 16  │    R1───┤1      5├───C1
-    BUZ──┤ 17  │    R2───┤2      6├───C2
-    LED──┤ 18  │    R3───┤3      7├───C3
-    PIR──┤ 19  │    R4───┤4      8├───C4
-         └─────┘         └──────────┘
+OLED Pin → Pico Pin
+VCC      → 3.3V
+GND      → GND
+SDA      → GPIO 0
+SCL      → GPIO 1
+```
+
+### 4x4 Matrix Keypad Layout
+```
+Keypad Layout:      Pin Connections:
+┌───────────────┐   Row 1 → GPIO 2
+│ 1 │ 2 │ 3 │ A │   Row 2 → GPIO 3
+├───┼───┼───┼───┤   Row 3 → GPIO 4
+│ 4 │ 5 │ 6 │ B │   Row 4 → GPIO 5
+├───┼───┼───┼───┤   Col 1 → GPIO 6
+│ 7 │ 8 │ 9 │ C │   Col 2 → GPIO 7
+├───┼───┼───┼───┤   Col 3 → GPIO 8
+│ * │ 0 │ # │ D │   Col 4 → GPIO 9
+└───────────────┘
+```
+
+### Other Components
+```
+Component     → Pico Pin
+Red LED (+)   → GPIO 16 → 330Ω → LED → GND
+Green LED (+) → GPIO 18 → 330Ω → LED → GND
+Buzzer (+)    → GPIO 17
+Buzzer (-)    → GND
+PIR VCC       → 5V (VBUS)
+PIR GND       → GND
+PIR OUT       → GPIO 19
 ```
 
 ## 🚦 Installation
 
-### 1. Flash MicroPython
-```bash
-# Download MicroPython firmware for Raspberry Pi Pico
-# Flash using Thonny IDE or rshell
-```
+### 1. Prepare Raspberry Pi Pico
+1. Download latest MicroPython firmware for Raspberry Pi Pico
+2. Hold BOOTSEL button while connecting USB cable
+3. Copy `.uf2` firmware file to RPI-RP2 drive
+4. Pico will restart automatically
 
 ### 2. Install Required Libraries
 ```python
-# Upload these files to your Pico:
-# - ssd1306.py (OLED driver)
-# - main.py (this project)
+# Download ssd1306.py OLED driver library
+# Copy to Pico using Thonny IDE or rshell
 ```
 
-### 3. Upload Code
-```bash
-# Using Thonny IDE:
-# 1. Open the security_system.py file
-# 2. Save as main.py on the Pico
-# 3. Reset the device
-```
+### 3. Upload Main Code
+1. Open Thonny IDE
+2. Copy the security system code
+3. Save as `main.py` on the Raspberry Pi Pico
+4. Reset the device or press Ctrl+D in REPL
 
-## 💻 Usage
+## 💻 Operation Guide
 
-### Initial Setup
-1. **Power on** the system
-2. **Press D** to set your first password
-3. **Enter 4-8 digits** and press **#** to confirm
-4. System will show "Password set!" confirmation
+### First Time Setup
+1. **Power on** - System displays main menu
+2. **Press D** - Enter password setup mode
+3. **Enter digits** (1-8 characters) using number keys
+4. **Press #** - Confirm and save password
+5. **Success** - Green LED + confirmation tone
 
-### Daily Operation
-- **Press A**: Login and arm the alarm
-- **Press D**: Change existing password
-- **Hold \***: Delete saved password (3-second hold)
+### Daily Operations
 
-### Keypad Controls
+#### Login and Arm System
+1. **Press A** from main menu
+2. **Enter password** using keypad
+3. **Press #** to confirm
+4. **System armed** - Motion detection active
+
+#### Change Password
+1. **Press D** from main menu
+2. **Enter current password** and press #
+3. **Enter new password** and press #
+4. **Confirmation** - Password updated
+
+#### Motion Detection
+- When armed, PIR sensor monitors for movement
+- **Motion detected** → Alarm activates immediately
+- **Enter password** to disarm and stop alarm
+
+### Keypad Reference
+
 | Key | Function |
 |-----|----------|
 | **0-9** | Enter password digits |
-| **A** | Login/Arm system |
+| **A** | Login/Access system |
 | **D** | Set/Change password |
-| **#** | Confirm password |
-| **C** | Backspace |
-| **\*** | Delete password (hold) |
+| **#** | Confirm password entry |
+| **C** | Backspace (delete last digit) |
+| **\*** | Delete saved password |
 
-### Security Features
-- **3 failed attempts** → 6-second lockout
-- **10-second timeout** → Auto-return to menu
-- **Motion detection** → Automatic alarm trigger
-- **Password required** to disarm alarm
+## 🔒 Security Features
 
-## 🔒 Security Implementation
+### Password Protection
+- **SHA-256 hashing** ensures passwords never stored in plaintext
+- **Flash persistence** maintains passwords across power cycles
+- **Maximum 8 digits** prevents excessively long inputs
+- **Masked display** shows asterisks instead of actual digits
 
-- **SHA-256 Hashing**: Passwords never stored in plain text
-- **Flash Storage**: Persistent password storage across reboots
-- **Attempt Limiting**: Prevents brute force attacks
-- **Session Timeout**: Automatic logout for security
-- **Motion Triggered**: Immediate alarm on unauthorized movement
+### Anti-Tampering
+- **Failed attempt tracking** counts incorrect password entries
+- **Automatic lockout** after 3 consecutive failures
+- **6-second timeout** prevents rapid brute force attempts
+- **Visual feedback** shows remaining lockout time
 
-## 📱 System States
+### Motion Detection
+- **PIR sensor integration** with 2-second debounce protection
+- **Immediate alarm** activation upon motion detection
+- **Continuous buzzer** until correct password entered
+- **Armed/disarmed states** for controlled monitoring
 
+## 📱 System State Flow
 ```mermaid
 graph TD
     A[Menu] --> B[Login Mode]
@@ -143,77 +181,90 @@ graph TD
     K --> L[Enter Password]
     L -->|Correct| A
 ```
-
 ## 🔔 Alert System
 
-| Event | LED | Buzzer | Display |
-|-------|-----|--------|---------|
-| Correct Password | Green | High tone | "Welcome!" |
-| Wrong Password | Red | Low tone | "Wrong Password!" |
-| Motion Detected | - | Continuous | Alarm screen |
-| Password Set | Green | Success tone | "Password set!" |
-| System Locked | Red | Warning tone | Lockdown timer |
+| Event | Red LED | Green LED | Buzzer | Display Message |
+|-------|---------|-----------|--------|-----------------|
+| Correct Password | - | ✓ | High tone (3000Hz) | "Welcome!" |
+| Wrong Password | ✓ | - | Low tone (2000Hz) | "Wrong Password!" |
+| Password Saved | - | ✓ | Success tone | "Password saved" |
+| Motion Detected | - | - | Continuous alarm | Alarm display |
+| System Locked | ✓ | - | Warning tone | Lockout timer |
+| Key Press | ✓ (brief) | - | Short beep | Input feedback |
 
 ## 🐛 Troubleshooting
 
-### Common Issues
-- **OLED not displaying**: Check I2C connections (SDA/SCL)
-- **Keypad not responding**: Verify row/column pin connections
-- **PIR false triggers**: Adjust sensor sensitivity or add delay
-- **Password not saving**: Ensure flash write permissions
+### Display Issues
+- **Blank OLED**: Check I2C wiring (SDA/SCL), verify 3.3V power
+- **Garbled display**: Ensure correct I2C address (0x3C for most SSD1306)
+- **Intermittent display**: Check loose connections
 
-### Debug Mode
-```python
-# Add debug prints in main.py:
-print(f"Password entered: {len(entered_password)} chars")
-print(f"Current mode: {current_mode}")
-```
+### Keypad Problems
+- **No key response**: Verify all 8 pin connections to keypad
+- **Wrong characters**: Check row/column pin mapping
+- **Multiple key presses**: Clean keypad contacts, check debouncing
 
-## 🔮 Future Enhancements
+### Sensor Issues
+- **PIR false triggers**: Adjust sensitivity potentiometer, check power supply
+- **No motion detection**: Verify 5V power to PIR, check signal wire
+- **Continuous triggering**: Allow PIR warm-up time (30-60 seconds)
 
-- [ ] **WiFi Integration**: Remote monitoring and alerts
-- [ ] **Mobile App**: Smartphone control interface
-- [ ] **Multiple Users**: Different access levels
-- [ ] **Time-based Access**: Scheduled arming/disarming
-- [ ] **Camera Integration**: Photo capture on motion
-- [ ] **Database Logging**: Event history and analytics
-- [ ] **Web Dashboard**: Browser-based control panel
+### Password Issues
+- **Can't save password**: Check flash memory space, verify file permissions
+- **Password not persistent**: Ensure proper file system mounting
+- **Hash errors**: Verify SHA-256 library availability
 
 ## 📊 Technical Specifications
 
-- **Microcontroller**: RP2040 (Dual-core ARM Cortex-M0+)
-- **Clock Speed**: 133 MHz
-- **Memory**: 264KB SRAM, 2MB Flash
+### Microcontroller
+- **Processor**: RP2040 dual-core ARM Cortex-M0+ @ 133MHz
+- **Memory**: 264KB SRAM, 2MB Flash storage
+- **GPIO**: 26 programmable pins, PWM, I2C, SPI support
+- **Power**: 1.8-5.5V operating voltage
+
+### Software
 - **Language**: MicroPython 3.4+
-- **Display**: SSD1306 OLED (128x64, I2C)
-- **Input**: 4x4 Matrix Keypad
-- **Storage**: Flash-based password persistence
+- **Libraries**: hashlib, ubinascii, machine, ssd1306
+- **Storage**: Flash-based file system for persistence
+- **Real-time**: Hardware timer-based scheduling
+
+### Performance
+- **Response Time**: <100ms keypad input processing
+- **PIR Sensitivity**: Adjustable detection range up to 7 meters
+- **Password Security**: SHA-256 cryptographic hashing
+- **System Reliability**: Watchdog timer protection
 
 ## 🤝 Contributing
 
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
-3. **Commit** your changes (`git commit -m 'Add AmazingFeature'`)
-4. **Push** to the branch (`git push origin feature/AmazingFeature`)
-5. **Open** a Pull Request
+We welcome contributions to improve SecurePico! Here's how to get started:
+
+1. **Fork** the repository on GitHub
+2. **Create** a feature branch (`git checkout -b feature/NewFeature`)
+3. **Make** your changes with clear commit messages
+4. **Test** thoroughly on actual hardware
+5. **Submit** a pull request with detailed description
+
+### Development Guidelines
+- Follow PEP 8 Python style guidelines
+- Comment all hardware-specific code sections
+- Test on Raspberry Pi Pico hardware before submission
+- Update documentation for any new features
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for complete details.
 
-## 👨‍💻 Author
 
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
-
-## 🙏 Acknowledgments
-
-- MicroPython community for excellent documentation
-- Raspberry Pi Foundation for the Pico platform
-- Open source contributors for SSD1306 drivers
+### Support Resources
+- **Issues**: Report bugs and request features on GitHub
+- **Documentation**: Complete setup guides and API reference
+- **Community**: Join discussions for tips and improvements
 
 ---
 
-⭐ **Star this repo** if you found it helpful!
+### 🔗 Quick Links
+- [Hardware Assembly Guide](#circuit-connections)
+- [Software Installation](#installation)
+- [Troubleshooting Guide](#troubleshooting)
+
+⭐ **Star this repository** if SecurePico helped secure your project!
