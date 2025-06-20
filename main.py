@@ -1,9 +1,11 @@
-# MicroPython Security System with Keypad, PIR Sensor, and OLED Display
 from machine import Pin, I2C, PWM
 from ssd1306 import SSD1306_I2C
 import hashlib
 import ubinascii
 import time
+import network
+import ure
+import _thread
 import os
 
 # Hardware Pin Definitions
@@ -32,6 +34,21 @@ alarm_active = False
 last_pir_trigger = 0
 PIR_DEBOUNCE_TIME = 2  # Prevent false PIR triggers
 MAX_PASSWORD_LENGTH = 8
+
+
+# Wi-Fi Settings
+ssid = "WIFI NAME"
+password = "PASSWORD"
+
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect(ssid, password)
+
+print("Connecting to Wi-Fi...")
+while not wlan.isconnected():
+    time.sleep(1)
+print("Connected! IP address:", wlan.ifconfig()[0])
+
 
 # 4x4 Keypad Configuration
 keys = [
@@ -105,6 +122,48 @@ def update_password_display():
     oled.text("# to confirm", 0, 30)
     oled.text("D to cancel", 0, 40)
     oled.show()
+
+
+def generate_html_response():
+    global alarm_active 
+    
+    html = """<!DOCTYPE html>
+    <html>
+    <head>
+        <title>SecurePico</title>
+        <meta charset="utf-8">
+        <style>
+            body {{ text-align:center; font-family:sans-serif; background-color: {} }}; /* Dynamic background in style */
+        </style>
+        <script>
+            function updateAlarmStatus() {{
+                fetch('/') // Request the same page, the server will send updated status
+                    .then(response => response.text())
+                    .then(html => {{
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newStatus = doc.querySelector('#alarm-status-text').innerText;
+                        const newBgColor = doc.body.style.backgroundColor; // Get new background color
+                        document.querySelector('#alarm-status-text').innerText = newStatus;
+                        document.body.style.backgroundColor = newBgColor; // Apply new background color
+                    }})
+                    .catch(error => console.error('Error fetching alarm status:', error));
+            }}
+            setInterval(updateAlarmStatus, 2000); // Refresh every 2 seconds
+        </script>
+    </head>
+    <body style="text-align:center; font-family:sans-serif; background-color:{}">
+        <h1>SecurePico Security System</h1>
+        <p>Alarm Status: <strong id="alarm-status-text">{}</strong></p>
+        <form>
+            <input type="password" name="pwd" placeholder="Enter password">
+            <input type="submit" value="Deactivate Alarm">
+        </form>
+    </body>
+    </html>
+    """.format("red" if alarm_active else "white", "red" if alarm_active else "white", "ACTIVE" if alarm_active else "INACTIVE") 
+    return html
+
 
 # Clear password input fields
 def reset_input():
@@ -246,6 +305,32 @@ def show_menu():
         oled.text("*: Delete pwd", 0, 30)
     oled.show()
 
+def start_web_server():
+    import socket
+    addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
+    s = socket.socket()
+    s.bind(addr)
+    s.listen(1)
+    print("Web server started at:", wlan.ifconfig()[0])
+
+    while True:
+        client, addr = s.accept()
+        print("Client connected:", addr)
+        request = client.recv(1024).decode()
+
+        # Check for password in GET request
+        match = ure.search("GET /\\?pwd=([a-zA-Z0-9]+)", request)
+        if match:
+            pwd = match.group(1)
+            if hash_password(pwd) == saved_password:
+                stop_alarm()
+
+        # Send HTML page
+        response = generate_html_response()
+        client.send("HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n")
+        client.send(response)
+        client.close()
+
 # Activate alarm when motion detected
 def start_alarm():
     global alarm_active
@@ -275,6 +360,7 @@ def arm_alarm():
 saved_password = load_password_from_flash()
 show_menu()
 
+_thread.start_new_thread(start_web_server, ())
 
 # Main program loop
 while True:
@@ -341,3 +427,4 @@ while True:
         handle_password_input(key)
 
     time.sleep(0.1)  # Small delay to prevent excessive CPU usage
+    
