@@ -2,7 +2,7 @@
 
 A comprehensive home security system built with MicroPython for Raspberry Pi Pico, featuring password authentication, PIR motion detection, and alarm functionality with OLED display and 4x4 keypad interface.
 
-## 🚀 Features
+## Features
 
 - **Password Authentication**: Secure SHA-256 hashed password system with persistent flash storage
 - **Motion Detection**: PIR sensor integration with debounce protection
@@ -14,7 +14,7 @@ A comprehensive home security system built with MicroPython for Raspberry Pi Pic
 - **Password Management**: Set, change, and delete passwords with confirmation
 - **Input Validation**: Maximum 8-digit password length with masked display
 
-## 🛠️ Hardware Requirements
+## Hardware Requirements
 
 | Component | Quantity | Purpose |
 |-----------|----------|---------|
@@ -28,7 +28,7 @@ A comprehensive home security system built with MicroPython for Raspberry Pi Pic
 | Breadboard or PCB | 1 | Circuit assembly |
 | Jumper Wires | Various | Connections |
 
-## 🔧 Circuit Connections
+## Circuit Connections
 
 ### OLED Display (I2C)
 ```
@@ -65,7 +65,7 @@ PIR GND       → GND
 PIR OUT       → GPIO 19
 ```
 
-## 🚦 Installation
+## Installation
 
 ### 1. Prepare Raspberry Pi Pico
 1. Download latest MicroPython firmware for Raspberry Pi Pico
@@ -85,7 +85,7 @@ PIR OUT       → GPIO 19
 3. Save as `main.py` on the Raspberry Pi Pico
 4. Reset the device or press Ctrl+D in REPL
 
-## 💻 Operation Guide
+## Operation Guide
 
 ### First Time Setup
 1. **Power on** - System displays main menu
@@ -124,7 +124,7 @@ PIR OUT       → GPIO 19
 | **C** | Backspace (delete last digit) |
 | **\*** | Delete saved password |
 
-## 🔒 Security Features
+## Security Features
 
 ### Password Protection
 - **SHA-256 hashing** ensures passwords never stored in plaintext
@@ -144,7 +144,7 @@ PIR OUT       → GPIO 19
 - **Continuous buzzer** until correct password entered
 - **Armed/disarmed states** for controlled monitoring
 
-## 📱 System State Flow
+## System State Flow
 ```mermaid
 graph TD
     A[Menu] --> B[Login Mode]
@@ -161,7 +161,7 @@ graph TD
     K --> L[Enter Password]
     L -->|Correct| A
 ```
-## 🔔 Alert System
+## Alert System
 
 | Event | Red LED | Green LED | Buzzer | Display Message |
 |-------|---------|-----------|--------|-----------------|
@@ -172,7 +172,7 @@ graph TD
 | System Locked | ✓ | - | Warning tone | Lockout timer |
 | Key Press | ✓ (brief) | - | Short beep | Input feedback |
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Display Issues
 - **Blank OLED**: Check I2C wiring (SDA/SCL), verify 3.3V power
@@ -194,7 +194,7 @@ graph TD
 - **Password not persistent**: Ensure proper file system mounting
 - **Hash errors**: Verify SHA-256 library availability
 
-## 📊 Technical Specifications
+## Technical Specifications
 
 ### Microcontroller
 - **Processor**: RP2040 dual-core ARM Cortex-M0+ @ 133MHz
@@ -214,37 +214,3 @@ graph TD
 - **Password Security**: SHA-256 cryptographic hashing
 - **System Reliability**: Watchdog timer protection
 
-## 🤝 Contributing
-
-We welcome contributions to improve SecurePico! Here's how to get started:
-
-1. **Fork** the repository on GitHub
-2. **Create** a feature branch (`git checkout -b feature/NewFeature`)
-3. **Make** your changes with clear commit messages
-4. **Test** thoroughly on actual hardware
-5. **Submit** a pull request with detailed description
-
-### Development Guidelines
-- Follow PEP 8 Python style guidelines
-- Comment all hardware-specific code sections
-- Test on Raspberry Pi Pico hardware before submission
-- Update documentation for any new features
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for complete details.
-
-
-### Support Resources
-- **Issues**: Report bugs and request features on GitHub
-- **Documentation**: Complete setup guides and API reference
-- **Community**: Join discussions for tips and improvements
-
----
-
-### 🔗 Quick Links
-- [Hardware Assembly Guide](#circuit-connections)
-- [Software Installation](#installation)
-- [Troubleshooting Guide](#troubleshooting)
-
-⭐ **Star this repository** if SecurePico helped secure your project!
