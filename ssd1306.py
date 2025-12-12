@@ -1,4 +1,5 @@
 # ssd1306.py - SSD1306 OLED Display Library
+# Based on a common MicroPython SSD1306 OLED driver.
 
 import framebuf
 
@@ -84,3 +85,4 @@ class SSD1306_I2C(SSD1306):
     def write_data(self, buf):
         self.write_list[1] = buf
         self.i2c.writeto(self.addr, b''.join(self.write_list))
+
