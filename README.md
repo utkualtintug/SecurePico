@@ -7,6 +7,7 @@ A comprehensive home security system built with MicroPython for Raspberry Pi Pic
 - **Password Authentication**: Secure SHA-256 hashed password system with persistent flash storage
 - **Motion Detection**: PIR sensor integration with debounce protection
 - **Alarm System**: Armed/disarmed states with motion-triggered alerts
+- **Web Interface**: Built-in HTTP server to monitor alarm status and remotely deactivate the alarm via browser
 - **Security Lockdown**: 6-second lockout after 3 consecutive failed attempts
 - **Visual Interface**: 128x64 OLED display with real-time status and menus
 - **Audio Feedback**: PWM buzzer with different tones for various events
@@ -75,8 +76,9 @@ PIR OUT       → GPIO 19
 
 ### 2. Install Required Libraries
 ```python
-# Download ssd1306.py OLED driver library
-# Copy to Pico using Thonny IDE or rshell
+# Copy ssd1306.py OLED driver library to the Pico
+# Ensure ssd1306.py is in the same directory as main.py
+# Use Thonny IDE or rshell for file transfer
 ```
 
 ### 3. Upload Main Code
@@ -144,6 +146,9 @@ PIR OUT       → GPIO 19
 - **Continuous buzzer** until correct password entered
 - **Armed/disarmed states** for controlled monitoring
 
+> Note: This project is intended for educational and hobby use.  
+> The web interface uses plain HTTP and GET parameters and is not suitable for production-grade security.
+
 ## System State Flow
 ```mermaid
 graph TD
@@ -203,12 +208,12 @@ graph TD
 - **Power**: 1.8-5.5V operating voltage
 
 ### Software
-- **Language**: MicroPython 3.4+
-- **Libraries**: hashlib, ubinascii, machine, ssd1306
+- **Language**: MicroPython
+- **Libraries**: hashlib, ubinascii, machine, network, ure, _thread, ssd1306
 - **Storage**: Flash-based file system for persistence
-- **Real-time**: Hardware timer-based scheduling
+- **Real-time**: Loop-based polling with simple time checks and time.sleep()
 
 ### Performance
-- **Response Time**: <100ms keypad input processing
+- **Response Time**: ~100 ms keypad input processing
 - **PIR Sensitivity**: Adjustable detection range up to 7 meters
 - **Password Security**: SHA-256 cryptographic hashing
