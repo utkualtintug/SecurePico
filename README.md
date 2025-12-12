@@ -75,11 +75,12 @@ PIR OUT       → GPIO 19
 4. Pico will restart automatically
 
 ### 2. Install Required Libraries
-```python
-# Copy ssd1306.py OLED driver library to the Pico
-# Ensure ssd1306.py is in the same directory as main.py
-# Use Thonny IDE or rshell for file transfer
-```
+
+- Copy ssd1306.py OLED driver library to the Pico
+- Ensure ssd1306.py is in the same directory as main.py
+- Use Thonny IDE or rshell for file transfer
+ 
+> This project uses an SSD1306 OLED driver based on the common MicroPython SSD1306 driver implementation.
 
 ### 3. Upload Main Code
 1. Open Thonny IDE
