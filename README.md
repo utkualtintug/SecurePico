@@ -212,5 +212,3 @@ graph TD
 - **Response Time**: <100ms keypad input processing
 - **PIR Sensitivity**: Adjustable detection range up to 7 meters
 - **Password Security**: SHA-256 cryptographic hashing
-- **System Reliability**: Watchdog timer protection
-
