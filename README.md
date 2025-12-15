@@ -1,5 +1,7 @@
 # SecurePico - IoT Security System with Motion Detection
 
+![SecurePico Hardware Setup](images/securepico_hardware.png)
+
 A comprehensive home security system built with MicroPython for Raspberry Pi Pico, featuring password authentication, PIR motion detection, and alarm functionality with OLED display and 4x4 keypad interface.
 
 ## Features
@@ -17,21 +19,22 @@ A comprehensive home security system built with MicroPython for Raspberry Pi Pic
 
 ## Hardware Requirements
 
-| Component | Quantity | Purpose |
-|-----------|----------|---------|
-| Raspberry Pi Pico | 1 | Main microcontroller |
-| SSD1306 OLED Display (128x64, I2C) | 1 | User interface |
-| 4x4 Matrix Keypad | 1 | Password input and navigation |
-| PIR Motion Sensor (HC-SR501) | 1 | Motion detection |
-| Active Buzzer | 1 | Audio alerts |
-| LEDs (Red, Green) | 2 | Visual status indicators |
-| Resistors (220Ω-330Ω) | 2 | LED current limiting |
-| Breadboard or PCB | 1 | Circuit assembly |
-| Jumper Wires | Various | Connections |
+| Component                          | Quantity | Purpose                       |
+| ---------------------------------- | -------- | ----------------------------- |
+| Raspberry Pi Pico                  | 1        | Main microcontroller          |
+| SSD1306 OLED Display (128x64, I2C) | 1        | User interface                |
+| 4x4 Matrix Keypad                  | 1        | Password input and navigation |
+| PIR Motion Sensor (HC-SR501)       | 1        | Motion detection              |
+| Active Buzzer                      | 1        | Audio alerts                  |
+| LEDs (Red, Green)                  | 2        | Visual status indicators      |
+| Resistors (220Ω-330Ω)              | 2        | LED current limiting          |
+| Breadboard or PCB                  | 1        | Circuit assembly              |
+| Jumper Wires                       | Various  | Connections                   |
 
 ## Circuit Connections
 
 ### OLED Display (I2C)
+
 ```
 OLED Pin → Pico Pin
 VCC      → 3.3V
@@ -41,6 +44,7 @@ SCL      → GPIO 1
 ```
 
 ### 4x4 Matrix Keypad Layout
+
 ```
 Keypad Layout:      Pin Connections:
 ┌───────────────┐   Row 1 → GPIO 2
@@ -55,6 +59,7 @@ Keypad Layout:      Pin Connections:
 ```
 
 ### Other Components
+
 ```
 Component     → Pico Pin
 Red LED (+)   → GPIO 16 → 330Ω → LED → GND
@@ -69,6 +74,7 @@ PIR OUT       → GPIO 19
 ## Installation
 
 ### 1. Prepare Raspberry Pi Pico
+
 1. Download latest MicroPython firmware for Raspberry Pi Pico
 2. Hold BOOTSEL button while connecting USB cable
 3. Copy `.uf2` firmware file to RPI-RP2 drive
@@ -79,10 +85,11 @@ PIR OUT       → GPIO 19
 - Copy ssd1306.py OLED driver library to the Pico
 - Ensure ssd1306.py is in the same directory as main.py
 - Use Thonny IDE or rshell for file transfer
- 
+
 > This project uses an SSD1306 OLED driver based on the common MicroPython SSD1306 driver implementation.
 
 ### 3. Upload Main Code
+
 1. Open Thonny IDE
 2. Copy the security system code
 3. Save as `main.py` on the Raspberry Pi Pico
@@ -91,6 +98,7 @@ PIR OUT       → GPIO 19
 ## Operation Guide
 
 ### First Time Setup
+
 1. **Power on** - System displays main menu
 2. **Press D** - Enter password setup mode
 3. **Enter digits** (1-8 characters) using number keys
@@ -100,48 +108,54 @@ PIR OUT       → GPIO 19
 ### Daily Operations
 
 #### Login and Arm System
+
 1. **Press A** from main menu
 2. **Enter password** using keypad
 3. **Press #** to confirm
 4. **System armed** - Motion detection active
 
 #### Change Password
+
 1. **Press D** from main menu
 2. **Enter current password** and press #
 3. **Enter new password** and press #
 4. **Confirmation** - Password updated
 
 #### Motion Detection
+
 - When armed, PIR sensor monitors for movement
 - **Motion detected** → Alarm activates immediately
 - **Enter password** to disarm and stop alarm
 
 ### Keypad Reference
 
-| Key | Function |
-|-----|----------|
-| **0-9** | Enter password digits |
-| **A** | Login/Access system |
-| **D** | Set/Change password |
-| **#** | Confirm password entry |
-| **C** | Backspace (delete last digit) |
-| **\*** | Delete saved password |
+| Key     | Function                      |
+| ------- | ----------------------------- |
+| **0-9** | Enter password digits         |
+| **A**   | Login/Access system           |
+| **D**   | Set/Change password           |
+| **#**   | Confirm password entry        |
+| **C**   | Backspace (delete last digit) |
+| **\***  | Delete saved password         |
 
 ## Security Features
 
 ### Password Protection
+
 - **SHA-256 hashing** ensures passwords never stored in plaintext
 - **Flash persistence** maintains passwords across power cycles
 - **Maximum 8 digits** prevents excessively long inputs
 - **Masked display** shows asterisks instead of actual digits
 
 ### Anti-Tampering
+
 - **Failed attempt tracking** counts incorrect password entries
 - **Automatic lockout** after 3 consecutive failures
 - **6-second timeout** prevents rapid brute force attempts
 - **Visual feedback** shows remaining lockout time
 
 ### Motion Detection
+
 - **PIR sensor integration** with 2-second debounce protection
 - **Immediate alarm** activation upon motion detection
 - **Continuous buzzer** until correct password entered
@@ -151,6 +165,7 @@ PIR OUT       → GPIO 19
 > The web interface uses plain HTTP and GET parameters and is not suitable for production-grade security.
 
 ## System State Flow
+
 ```mermaid
 graph TD
     A[Menu] --> B[Login Mode]
@@ -167,35 +182,40 @@ graph TD
     K --> L[Enter Password]
     L -->|Correct| A
 ```
+
 ## Alert System
 
-| Event | Red LED | Green LED | Buzzer | Display Message |
-|-------|---------|-----------|--------|-----------------|
-| Correct Password | - | ✓ | High tone (3000Hz) | "Welcome!" |
-| Wrong Password | ✓ | - | Low tone (2000Hz) | "Wrong Password!" |
-| Password Saved | - | ✓ | Success tone | "Password saved" |
-| Motion Detected | - | - | Continuous alarm | Alarm display |
-| System Locked | ✓ | - | Warning tone | Lockout timer |
-| Key Press | ✓ (brief) | - | Short beep | Input feedback |
+| Event            | Red LED   | Green LED | Buzzer             | Display Message   |
+| ---------------- | --------- | --------- | ------------------ | ----------------- |
+| Correct Password | -         | ✓         | High tone (3000Hz) | "Welcome!"        |
+| Wrong Password   | ✓         | -         | Low tone (2000Hz)  | "Wrong Password!" |
+| Password Saved   | -         | ✓         | Success tone       | "Password saved"  |
+| Motion Detected  | -         | -         | Continuous alarm   | Alarm display     |
+| System Locked    | ✓         | -         | Warning tone       | Lockout timer     |
+| Key Press        | ✓ (brief) | -         | Short beep         | Input feedback    |
 
 ## Troubleshooting
 
 ### Display Issues
+
 - **Blank OLED**: Check I2C wiring (SDA/SCL), verify 3.3V power
 - **Garbled display**: Ensure correct I2C address (0x3C for most SSD1306)
 - **Intermittent display**: Check loose connections
 
 ### Keypad Problems
+
 - **No key response**: Verify all 8 pin connections to keypad
 - **Wrong characters**: Check row/column pin mapping
 - **Multiple key presses**: Clean keypad contacts, check debouncing
 
 ### Sensor Issues
+
 - **PIR false triggers**: Adjust sensitivity potentiometer, check power supply
 - **No motion detection**: Verify 5V power to PIR, check signal wire
 - **Continuous triggering**: Allow PIR warm-up time (30-60 seconds)
 
 ### Password Issues
+
 - **Can't save password**: Check flash memory space, verify file permissions
 - **Password not persistent**: Ensure proper file system mounting
 - **Hash errors**: Verify SHA-256 library availability
@@ -203,18 +223,21 @@ graph TD
 ## Technical Specifications
 
 ### Microcontroller
+
 - **Processor**: RP2040 dual-core ARM Cortex-M0+ @ 133MHz
 - **Memory**: 264KB SRAM, 2MB Flash storage
 - **GPIO**: 26 programmable pins, PWM, I2C, SPI support
 - **Power**: 1.8-5.5V operating voltage
 
 ### Software
+
 - **Language**: MicroPython
-- **Libraries**: hashlib, ubinascii, machine, network, ure, _thread, ssd1306
+- **Libraries**: hashlib, ubinascii, machine, network, ure, \_thread, ssd1306
 - **Storage**: Flash-based file system for persistence
 - **Real-time**: Loop-based polling with simple time checks and time.sleep()
 
 ### Performance
+
 - **Response Time**: ~100 ms keypad input processing
 - **PIR Sensitivity**: Adjustable detection range up to 7 meters
 - **Password Security**: SHA-256 cryptographic hashing
