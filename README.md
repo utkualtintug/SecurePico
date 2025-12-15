@@ -220,24 +220,8 @@ graph TD
 - **Password not persistent**: Ensure proper file system mounting
 - **Hash errors**: Verify SHA-256 library availability
 
-## Technical Specifications
-
-### Microcontroller
-
-- **Processor**: RP2040 dual-core ARM Cortex-M0+ @ 133MHz
-- **Memory**: 264KB SRAM, 2MB Flash storage
-- **GPIO**: 26 programmable pins, PWM, I2C, SPI support
-- **Power**: 1.8-5.5V operating voltage
-
 ### Software
 
 - **Language**: MicroPython
-- **Libraries**: hashlib, ubinascii, machine, network, ure, \_thread, ssd1306
-- **Storage**: Flash-based file system for persistence
-- **Real-time**: Loop-based polling with simple time checks and time.sleep()
-
-### Performance
-
-- **Response Time**: ~100 ms keypad input processing
-- **PIR Sensitivity**: Adjustable detection range up to 7 meters
-- **Password Security**: SHA-256 cryptographic hashing
+- **Core libraries**: machine, hashlib, network, ssd1306
+- **Storage**: Flash-based file system
