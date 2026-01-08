@@ -137,7 +137,7 @@ This project requires a specific folder structure to function correctly.
 1. Connect a device to the same WiFi network
 2. Check the Serial output (Thonny) for the Pico's IP address
 3. Open the IP in a web browser to see the real-time **Alarm Status**
-4. _Note: The web interface is read-only for security purposes_
+   > Note: The web interface is read-only for security purposes
 
 #### Change Password
 
