@@ -28,12 +28,12 @@ def stop_alarm():
     shared.alarm_active = False
     shared.alarm_armed = False
     hardware.stop_buzzer()
-    hardware.red_led(0)
+    hardware.red_led.value(0)
 
 def start_alarm():
     shared.alarm_active = True
     hardware.start_buzzer_alarm()
-    hardware.red_led(1)
+    hardware.red_led.value(1)
 
 def arm_alarm():
     global alarm_arm_time
