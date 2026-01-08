@@ -9,19 +9,19 @@ A comprehensive home security system built with MicroPython for Raspberry Pi Pic
 - **Password Authentication**: Secure SHA-256 hashed password system with persistent flash storage
 - **Motion Detection**: PIR sensor integration with debounce protection
 - **Alarm System**: Armed/disarmed states with motion-triggered alerts
-- **Web Interface**: Built-in HTTP server to monitor alarm status and remotely deactivate the alarm via browser
+- **Web Monitoring Dashboard**: Built-in HTTP server to monitor alarm status remotely via browser (**Read-Only**)
 - **Security Lockdown**: 6-second lockout after 3 consecutive failed attempts
 - **Visual Interface**: 128x64 OLED display with real-time status and menus
 - **Audio Feedback**: PWM buzzer with different tones for various events
 - **LED Indicators**: Red/green LEDs for visual status confirmation
 - **Password Management**: Set, change, and delete passwords with confirmation
-- **Input Validation**: Maximum 8-digit password length with masked display
+- **Input Validation**: Maximum 12-digit password length with masked display
 
 ## Hardware Requirements
 
 | Component                          | Quantity | Purpose                       |
 | ---------------------------------- | -------- | ----------------------------- |
-| Raspberry Pi Pico                  | 1        | Main microcontroller          |
+| Raspberry Pi Pico W                | 1        | Main microcontroller          |
 | SSD1306 OLED Display (128x64, I2C) | 1        | User interface                |
 | 4x4 Matrix Keypad                  | 1        | Password input and navigation |
 | PIR Motion Sensor (HC-SR501)       | 1        | Motion detection              |
@@ -75,25 +75,42 @@ PIR OUT       → GPIO 19
 
 ### 1. Prepare Raspberry Pi Pico
 
-1. Download latest MicroPython firmware for Raspberry Pi Pico
+1. Download latest MicroPython firmware for Raspberry Pi Pico W
 2. Hold BOOTSEL button while connecting USB cable
-3. Copy `.uf2` firmware file to RPI-RP2 drive
-4. Pico will restart automatically
+3. Copy the `.uf2` file to the drive that appears
 
-### 2. Install Required Libraries
+### 2. File Structure Setup (Crucial)
 
-- Copy ssd1306.py OLED driver library to the Pico
-- Ensure ssd1306.py is in the same directory as main.py
-- Use Thonny IDE or rshell for file transfer
+This project requires a specific folder structure to function correctly.
+
+1. **Root Directory:**
+
+   - Save the `main.py` file directly to the Pico's root folder.
+
+2. **Source Folder:**
+
+   - Create a new folder named `src` on the Pico.
+   - Upload the following files into the `src/` folder:
+
+     - `config.py`
+     - `hardware.py`
+     - `server.py`
+     - `shared.py`
+     - `storage.py`
+     - `ui.py`
+     - `ssd1306.py` (OLED Driver Library)
 
 > This project uses an SSD1306 OLED driver based on the common MicroPython SSD1306 driver implementation.
 
-### 3. Upload Main Code
+### 3. Configuration
 
-1. Open Thonny IDE
-2. Copy the security system code
-3. Save as `main.py` on the Raspberry Pi Pico
-4. Reset the device or press Ctrl+D in REPL
+1. Open `src/config.py` in your editor (Thonny).
+2. Edit the `SSID` and `PASSWORD` variables to match your local WiFi credentials.
+3. Save the file.
+
+### 4. Run
+
+- Press the **Reset** button on the Pico or run the `main.py` script from Thonny.
 
 ## Operation Guide
 
@@ -101,7 +118,7 @@ PIR OUT       → GPIO 19
 
 1. **Power on** - System displays main menu
 2. **Press D** - Enter password setup mode
-3. **Enter digits** (1-8 characters) using number keys
+3. **Enter digits** (1-12 characters) using number keys
 4. **Press #** - Confirm and save password
 5. **Success** - Green LED + confirmation tone
 
@@ -112,7 +129,15 @@ PIR OUT       → GPIO 19
 1. **Press A** from main menu
 2. **Enter password** using keypad
 3. **Press #** to confirm
-4. **System armed** - Motion detection active
+4. **Wait** - System initiates a **10-second startup delay** to allow you to exit the room
+5. **System armed** - Motion detection becomes active
+
+#### Web Monitoring
+
+1. Connect a device to the same WiFi network
+2. Check the Serial output (Thonny) for the Pico's IP address
+3. Open the IP in a web browser to see the real-time **Alarm Status**
+4. _Note: The web interface is read-only for security purposes_
 
 #### Change Password
 
@@ -144,7 +169,7 @@ PIR OUT       → GPIO 19
 
 - **SHA-256 hashing** ensures passwords never stored in plaintext
 - **Flash persistence** maintains passwords across power cycles
-- **Maximum 8 digits** prevents excessively long inputs
+- **Maximum 12 digits** prevents excessively long inputs
 - **Masked display** shows asterisks instead of actual digits
 
 ### Anti-Tampering
@@ -161,14 +186,13 @@ PIR OUT       → GPIO 19
 - **Continuous buzzer** until correct password entered
 - **Armed/disarmed states** for controlled monitoring
 
-> Note: This project is intended for educational and hobby use.  
-> The web interface uses plain HTTP and GET parameters and is not suitable for production-grade security.
+> Note: This project is intended for educational and hobby use.
 
 ## System State Flow
 
 ```mermaid
 graph TD
-    A[Menu] --> B[Login Mode]
+A[Menu] --> B[Login Mode]
     A --> C[Set Password]
     A --> D[Delete Password]
     B --> E{Password Correct?}
@@ -177,10 +201,11 @@ graph TD
     G --> H{3 Attempts?}
     H -->|Yes| I[Lockdown 6s]
     H -->|No| A
-    F --> J[Motion Detection]
-    J -->|Motion| K[Alarm Active]
-    K --> L[Enter Password]
-    L -->|Correct| A
+    F --> J[Wait 10s Delay]
+    J --> K[Motion Detection]
+    K -->|Motion| L[Alarm Active]
+    L --> M[Enter Password]
+    M -->|Correct| A
 ```
 
 ## Alert System
@@ -199,7 +224,7 @@ graph TD
 ### Display Issues
 
 - **Blank OLED**: Check I2C wiring (SDA/SCL), verify 3.3V power
-- **Garbled display**: Ensure correct I2C address (0x3C for most SSD1306)
+- **Garbled display**: Ensure correct I2C address
 - **Intermittent display**: Check loose connections
 
 ### Keypad Problems
