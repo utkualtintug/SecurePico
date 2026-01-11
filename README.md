@@ -250,3 +250,7 @@ A[Menu] --> B[Login Mode]
 - **Language**: MicroPython
 - **Core libraries**: machine, hashlib, network, ssd1306
 - **Storage**: Flash-based file system
+
+## License
+
+MIT License
