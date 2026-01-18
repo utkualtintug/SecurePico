@@ -100,7 +100,7 @@ This project requires a specific folder structure to function correctly.
      - `ui.py`
      - `ssd1306.py` (OLED Driver Library)
 
-> This project uses an SSD1306 OLED driver based on the common MicroPython SSD1306 driver implementation.
+> This project uses an SSD1306 OLED driver based on the common MicroPython SSD1306 driver implementation (see [Third-party components](#third-party-components)).
 
 ### 3. Configuration
 
@@ -253,4 +253,15 @@ A[Menu] --> B[Login Mode]
 
 ## License
 
-MIT License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### Third-party components
+
+This repository includes third-party code under its own license terms:
+
+- **`src/ssd1306.py`**
+  - **Description:** Derived from the MicroPython `micropython-lib` SSD1306 driver.
+  - **License:** MIT License (upstream).
+  - **Copyright:** (c) 2013, 2014 micropython-lib contributors.
+  - **Source:** https://github.com/micropython/micropython-lib/blob/master/micropython/drivers/display/ssd1306/ssd1306.py
+  - Full license text is included at the top of `src/ssd1306.py`.
